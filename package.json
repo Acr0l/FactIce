@@ -1,0 +1,26 @@
+{
+  "name": "Factice",
+  "version": "1.0.0",
+  "description": "Manage your ice empire ❄ from the very beginning!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node index.js",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "discord-bot"
+  ],
+  "author": "Acr0l",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^1.4.0",
+    "@types/node": "^18.0.6",
+    "discord.js": "^14.7.1",
+    "mongoose": "^6.8.0",
+    "mustache": "^4.2.0",
+    "node-fetch": "^3.2.6"
+  }
+}
