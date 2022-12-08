@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const DELAY = 50000
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -19,7 +20,13 @@ module.exports = {
 
     const target = interaction.options.getString("location")
     user.status = "moving"
-    await interaction.reply("You want to go to " + target);
-    console.log(user)
+    user.save();
+    await interaction.reply(`On your way to \`${target}\`\nIt will take ${DELAY/1000} seconds to get there!`);
+    setTimeout( () => {
+      interaction.followUp(`You are now in the \`${target}\``);
+      user.status = "idle"  
+      user.location = target
+      user.save();
+    }, DELAY)
 	},
 };

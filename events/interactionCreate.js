@@ -1,7 +1,8 @@
+const { Events } = require('discord.js')
 const Profile = require("../models/userModel");
 
 module.exports = {
-  name: "InteractionCreate",
+  name: Events.InteractionCreate,
   once: false,
   /**
    * Event handler, called when a user interacts with the bot.

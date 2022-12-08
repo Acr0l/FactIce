@@ -1,4 +1,4 @@
-const { Client, Events, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const TOKEN = process.env["TOKEN"];
 const { MONGODB_URI } = require("./config.json"),
   fs = require("fs"),
@@ -56,7 +56,7 @@ for (const file of subcommandFiles) {
     // @ts-ignore
     client.subcommands.set(subcommand.data.name, subcommand);
   } else {
-    logger.error(`${subcommand} not found`);
+    console.error(`${subcommand} not found`);
   }
 }
 
@@ -71,9 +71,9 @@ const eventFiles = fs
 for (const file of eventFiles) {
   const event = require(`./events/${file}`);
   if (event.once) {
-    client.once(Events[event.name], (...args) => event.execute(...args));
+    client.once(event.name, (...args) => event.execute(...args));
   } else {
-    client.on(Events[event.name], (...args) => event.execute(...args));
+    client.on(event.name, (...args) => event.execute(...args));
   }
 }
 
@@ -83,6 +83,7 @@ process.on("unhandledRejection", (error) => {
 
 // Connect to MongoDB
 mongoose
+  .set('strictQuery', false)
   .connect(MONGODB_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error(err));
