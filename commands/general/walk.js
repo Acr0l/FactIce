@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const Locations = require('../../constants/locations')
 const DELAY = 5000
 
 module.exports = {
@@ -26,9 +27,9 @@ module.exports = {
     if (user.location === target) return interaction.reply("You are already there!");
     user.status = "moving"
     user.save();
-    await interaction.reply(`On your way to \`${target}\`\nIt will take ${DELAY/1000} seconds to get there!`);
+    await interaction.reply(`On your way to \`${Location[target].displayName}\`\nIt will take ${DELAY/1000} seconds to get there!`);
     setTimeout( () => {
-      interaction.followUp(`You are now in the \`${target}\``);
+      interaction.followUp(`You are now in the \`${Location[target].displayName}\``);
       user.status = "idle"  
       user.location = target
       user.save();

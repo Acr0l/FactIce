@@ -1,5 +1,6 @@
-const { Events } = require('discord.js')
+const { Events } = require("discord.js");
 const Profile = require("../models/userModel");
+const logger = require("../logger");
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -13,10 +14,11 @@ module.exports = {
   async execute(interaction) {
     if (!interaction.inGuild()) return;
     if (!interaction.isCommand()) return;
-    const { guild } = interaction
+    const { guild } = interaction;
+    // @ts-ignore
     const command = interaction.client.commands.get(interaction.commandName);
 
-    if (!command) return
+    if (!command) return;
 
     let user;
     try {
@@ -25,15 +27,15 @@ module.exports = {
         guild,
       });
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       interaction.reply("It seems there was en error, sorry for the trouble!");
       return;
     }
-    
+
     try {
       await command.execute(interaction, user, interaction.client);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       interaction.reply("Error");
       return;
     }
@@ -46,7 +48,8 @@ async function getUser({ interaction, guild }) {
   });
   if (!user && interaction.commandName !== "tutorial") {
     await interaction.reply({
-      content: "You have not created your profile yet. Please do so by typing `/tutorial`.",
+      content:
+        "You have not created your profile yet. Please do so by typing `/tutorial`.",
       ephemeral: false,
     });
     return false;

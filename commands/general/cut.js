@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const iceLocations = ["small-mountains"];
 const Location = require("../../constants/locations.js");
-const Materials = require("../../constants/materials.js");
+const logger = require("../../logger");
 
 const toolEfficiency = {
   stone_pickaxe: 1,
@@ -100,7 +100,7 @@ module.exports = {
         );
       }, 3000);
     } catch (err) {
-      console.log(err);
+      logger.info(err);
     } finally {
       user.status = "idle";
       await user.save();
