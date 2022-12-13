@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const DELAY = 50000
+const DELAY = 5000
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,6 +10,10 @@ module.exports = {
         .setName("location")
         .setDescription("Place to go")
         .setRequired(true)
+        .addChoices(
+          {name: "Village", value:"village"},
+          {name: "Small Mountains", value:"small-mountains"}
+        )
     ),
 	async execute(interaction, user) {
 		if (user.status !== "idle") 
@@ -19,6 +23,7 @@ module.exports = {
       });
 
     const target = interaction.options.getString("location")
+    if (user.location === target) return interaction.reply("You are already there!");
     user.status = "moving"
     user.save();
     await interaction.reply(`On your way to \`${target}\`\nIt will take ${DELAY/1000} seconds to get there!`);

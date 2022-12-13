@@ -47,7 +47,7 @@ const userSchema = mongoose.Schema({
 	},
   status: {
     type: String,
-    enum: ["idle", "moving", "cutting"],
+    enum: ["idle", "moving", "cutting", "selling"],
     default: "idle"
   },
   location: {
@@ -57,7 +57,10 @@ const userSchema = mongoose.Schema({
   }
 })
 
-userSchema.virtual('spaceLeft').get(() => (this.inventory.storage.capacity - this.inventory.storage.stored.reduce((a,b) => a.quantity + b.quantity), 0))
+userSchema.virtual('spaceLeft').get(function() { 
+  return this.inventory.storage.capacity - this.inventory.storage.stored.map(e => e.quantity || 0).reduce(
+    (a,b) => a + b, 0)
+})
 const Profile = mongoose.model('Profiles', userSchema);
 
 module.exports = Profile;
