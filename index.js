@@ -1,6 +1,5 @@
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
-const TOKEN = process.env["TOKEN"];
-const { MONGODB_URI } = require("./config.json"),
+const { MONGODB_URI, TOKEN } = require("./config.json"),
   fs = require("fs"),
   mongoose = require("mongoose"),
   path = require("path");

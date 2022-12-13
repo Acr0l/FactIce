@@ -1,7 +1,7 @@
 
 const { REST, Routes } = require('discord.js');
 const { clientId, guildId } = require('./config.json');
-const TOKEN = process.env["TOKEN"];
+const { TOKEN } = require("./config.json");
 const fs = require('node:fs');
 const path = require('path');
 
@@ -38,6 +38,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 			{ body: commands },
 		);
 
+		// @ts-ignore
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
