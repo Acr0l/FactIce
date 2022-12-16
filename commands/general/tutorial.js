@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const logger = require("../../logger");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const Profile = require("../../models/userModel");
+const { Tools } = require("../../constants/Classes/ItemClass");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("tutorial")
@@ -21,6 +22,9 @@ module.exports = {
       if (!user) {
         const profile = await Profile.create({
           userId: interaction.user.id,
+          inventory: {
+            tool: Tools.get("stn_pkx").equip,
+          },
         });
         profile.save();
         await interaction.reply({

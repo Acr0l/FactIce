@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const Materials = require("../../constants/Classes/materials");
 const logger = require("../../logger");
 const DELAY = 10000;
 
@@ -12,39 +13,56 @@ module.exports = {
         .setDescription("The item you want to offer.")
         .setRequired(true)
         .addChoices(
-          { name: "Common Ice", value: "common_ice" },
-          { name: "Special Ice", value: "special_ice" }
+          { name: "Common Ice", value: "cm_i" },
+          { name: "Special Ice", value: "sp_i" }
         )
     )
     .addIntegerOption((amount) =>
       amount
         .setName("amount")
         .setDescription("Amount of the item you want to offer.")
-        .setRequired(false)
+        .setRequired(true)
+        .setMinValue(1)
     ),
+  /**
+   *
+   * @param {import('discord.js').CommandInteraction} interaction
+   * @param {*} user
+   * @returns
+   */
   async execute(interaction, user) {
+    // @ts-ignore
+    const itemToSellId = interaction.options.getString("item"),
+      // @ts-ignore
+      amountToSell = interaction.options.getInteger("amount");
+    // #region Returns
     if (user.location !== "village")
       return interaction.reply(
         "You cannot sell ice here!\nTry at the `Village`"
       );
-    const itemToSell = interaction.options.getString("item"),
-      amountToSell = interaction.options.getInteger("amount");
-    if (
-      !user.inventory.storage.stored.some(
-        (e) => e.type === itemToSell && e.quantity >= amountToSell
-      )
-    )
-      return interaction.reply("You can't offer what you don't have!");
+    // #endregion
     user.status = "selling";
-    user.save();
+    await user.save();
     try {
-      setTimeout(() => {}, DELAY);
+      interaction.reply("Selling fresh ice...");
+      setTimeout(async () => {
+        user.sell = { itemId: itemToSellId, amount: amountToSell };
+        // TODO: Add money
+        const moneyReceived =
+          (Materials.get(itemToSellId)?.itemPrice ?? 0) * amountToSell;
+        user.balance += moneyReceived;
+        await user.save();
+        // TODO: Reply with money received.
+        interaction.editReply(
+          `You sold \`${amountToSell}\` *${
+            Materials.get(itemToSellId)?.displayName ?? "an item"
+          }* for \`$${moneyReceived}\``
+        );
+      }, DELAY);
     } catch (error) {
-      interaction.reply("Something went wrong, we are working to fix it!");
-      logger.info(error);
-    } finally {
-      user.status = "idle";
-      user.save();
+      await user.save();
+      interaction.followUp(error.message);
+      logger.error(error);
     }
   },
 };

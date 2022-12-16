@@ -1,23 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const iceLocations = ["small-mountains"];
-const Location = require("../../constants/locations.js");
-const logger = require("../../logger");
+const Location = require("../../constants/Classes/locations.js");
+const logger = require("../../logger.js");
 
-const toolEfficiency = {
-  stone_pickaxe: 1,
-};
-const materials = {
-  "small-mountains": {
-    common_ice: {
-      type: "common",
-      probability: 0.99,
-    },
-    special_ice: {
-      type: "unique",
-      probability: 0.01,
-    },
-  },
-};
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("cut")
@@ -53,54 +38,41 @@ module.exports = {
     // #endregion
     user.status = "cutting";
     await user.save();
+    const currentLocation = Location.get(user.location) ??
+        Location.get("village") ?? { materials: "" },
+      userToolEfficiency = user.inventory.tool.efficiency ?? 0,
+      // @ts-ignore
+      rewardTypeIndex = currentLocation.materials.map((e) => e.rarity),
+      rewardTypeObj =
+        currentLocation.materials[weightedRandom(...rewardTypeIndex)],
+      rewardQuantity = rewardFormula(userToolEfficiency, rewardTypeObj),
+      toStore =
+        user.spaceLeft - rewardQuantity > 0 ? rewardQuantity : user.spaceLeft;
+
+    // Interact with user.
+    interaction.reply("Cutting...");
     try {
-      const currentLocation = Location[user.location];
-      const userToolEfficiency = toolEfficiency[user.inventory.tool] ?? 0,
-        // @ts-ignore
-        rewardTypeIndex = currentLocation.materials.map(
-          (e) => e.rarity
-        ),
-        rewardObj =
-          currentLocation.materials[weightedRandom(...rewardTypeIndex)],
-        rewardQuantity =
-          rewardObj.type == "unique"
-            ? 1
-            : Math.ceil(12 + Math.random() * 9 *
-              userToolEfficiency *
-              rewardObj.rarity),
-        toStore =
-          user.spaceLeft - rewardQuantity > 0
-            ? rewardQuantity 
-            : user.spaceLeft;
-      interaction.reply("Cutting...");
       setTimeout(() => {
-        if (
-          user.inventory.storage.stored.some((e) => e.name === rewardObj.name)
-        ) {
+        const findItem = (e) => e.itemId === rewardTypeObj.id;
+        if (user.inventory.storage.stored.some(findItem)) {
+          const itemInStorage = user.inventory.storage.stored.find(findItem);
           Object.assign(
-            user.inventory.storage.stored.find(
-              (e) => e.name === rewardObj.name
-            ),
-            {
-              name: rewardObj.name,
-              quantity: user.inventory.storage.stored.find(
-                (e) => e.name === rewardObj.name
-              ),
-            }.quantity + rewardQuantity
+            itemInStorage,
+            rewardTypeObj.store(itemInStorage.amount + toStore)
           );
         } else {
           user.inventory.storage.stored = [
             ...user.inventory.storage.stored,
-            { name: rewardObj.name, quantity: rewardQuantity },
+            rewardTypeObj.store(toStore),
           ];
         }
         user.save();
         interaction.followUp(
-          `You cut ${rewardQuantity} blocks of ${rewardObj.displayName}, and you stored ${toStore}.`
+          `You cut ${rewardQuantity} blocks of ${rewardTypeObj.displayName}, and you stored ${toStore}.`
         );
       }, 3000);
     } catch (err) {
-      logger.info(err);
+      logger.info(err.message);
     } finally {
       user.status = "idle";
       await user.save();
@@ -125,3 +97,19 @@ function weightedRandom(...pmf) {
   const r = Math.random();
   return cdf.filter((e) => r >= e).length;
 }
+
+/**
+ *
+ * @param {Number} userToolEfficiency - The efficiency
+ * @param { Object } param1
+ * @returns
+ */
+const rewardFormula = (userToolEfficiency, { rarity, type }) => {
+  const BASE_REWARD = 12;
+  const RANGE = 9;
+  return type === "unique"
+    ? 1
+    : Math.ceil(
+        BASE_REWARD + Math.random() * RANGE * userToolEfficiency * rarity
+      );
+};
