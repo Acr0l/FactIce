@@ -1,9 +1,10 @@
+const logger = require("../../logger.js");
 const BaseClass = require("./BaseClass.js");
 const Materials = require("./materials.js");
 
-/** Class representing a location 
+/** Class representing a location
  * @extends BaseClass
-*/
+ */
 class Location extends BaseClass {
   /**
    * Create a location
@@ -16,7 +17,7 @@ class Location extends BaseClass {
     super(displayName, name);
     this.rank = rank;
     this.materials = [];
-    this.lvlReq = lvlReq
+    this.lvlReq = lvlReq;
   }
   get lMaterials() {
     return this.materials;
@@ -26,16 +27,19 @@ class Location extends BaseClass {
     const total =
       materials.reduce((a, b) => a.rarity + b.rarity) +
       rankLeveler * materials.length;
-    this.materials = materials.map((material) => ({
-      ...material,
-      rarity: (total - material.rarity - rankLeveler) / total,
-    }));
+    this.materials = materials.map((material) => {
+      const fRarity = (total - material.rarity - rankLeveler) / total;
+      material.rarity = fRarity;
+      return material;
+    });
   }
 }
 
 const village = new Location("Village", "village", 0);
 const smallMountains = new Location("Small Mountains", "small-mountains", 1);
-smallMountains.lMaterials = Materials.filter(e => e.locations.includes(smallMountains.name));
+smallMountains.lMaterials = Array.from(Materials.values()).filter((e) =>
+  e.locations.includes(smallMountains.name)
+);
 
-
-module.exports = { [village.name]: village, [smallMountains.name]: smallMountains };
+const Locations = new Map([[village.name, village], [smallMountains.name, smallMountains]])
+module.exports = Locations;
