@@ -28,7 +28,7 @@ module.exports = {
       });
     } catch (err) {
       logger.error(err);
-      interaction.reply("It seems there was en error, sorry for the trouble!");
+      interaction.reply(err.message);
       return;
     }
 
@@ -46,13 +46,10 @@ async function getUser({ interaction, guild }) {
   const user = await Profile.findOne({
     userId: interaction.user.id,
   });
-  if (!user && interaction.commandName !== "tutorial") {
-    await interaction.reply({
-      content:
-        "You have not created your profile yet. Please do so by typing `/tutorial`.",
-      ephemeral: false,
-    });
-    return false;
-  }
+  if (!user && interaction.commandName !== "tutorial")
+    throw new Error(
+      "You have not created your profile yet. Please do so by typing `/tutorial`."
+    );
+
   return user;
 }
