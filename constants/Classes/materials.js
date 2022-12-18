@@ -44,7 +44,7 @@ class Material extends BaseItem {
       name: this.displayName,
       value: `**$${this.buyPrice}**\nA \`${
         ["Medieval", "Modern", "Contemporary"][this.rank]
-      }\` artifact!`,
+      }\` artifact!\nId: \`${this.id}\``,
     };
   }
 

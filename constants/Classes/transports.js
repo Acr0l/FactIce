@@ -14,9 +14,7 @@ class Transport extends BaseItem {
   constructor(displayName, name, price, rank, id, speed) {
     super(displayName, name, price, rank, id);
     if (typeof speed !== "number")
-      throw new Error(
-        `The speed must be a number. Received a ${typeof speed}`
-      );
+      throw new Error(`The speed must be a number. Received a ${typeof speed}`);
     if (!Number.isInteger(speed) || speed <= 0)
       throw new Error(
         `The speed must be an integer greater than 0. Received  ${speed}`
@@ -38,7 +36,7 @@ const BasicWoodenSled = new Transport(
   "basic_wooden_sled",
   600,
   0,
-  "bs_wd_sled",
+  "bs_wdn_sled",
   10
 );
 

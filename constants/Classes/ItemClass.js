@@ -23,8 +23,10 @@ class BaseItem extends BaseClass {
   get display() {
     return {
       name: this.displayName,
-      value: `**$${this.price}**\nA \`${["Medieval", "Modern", "Contemporary"][this.rank]}\` artifact!`
-    }
+      value: `**$${this.price}**\nA \`${
+        ["Medieval", "Modern", "Contemporary"][this.rank]
+      }\` artifact!\nId: \`${this.id}\``,
+    };
   }
 
   /**
@@ -39,6 +41,5 @@ class BaseItem extends BaseClass {
     };
   }
 }
-
 
 module.exports = BaseItem;

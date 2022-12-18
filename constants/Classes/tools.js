@@ -25,17 +25,26 @@ class Pickaxe extends BaseItem {
   }
 }
 
+const WoodenPickaxe = new Pickaxe(
+  "Wooden Pickaxe",
+  "wooden_pickaxe",
+  0,
+  0,
+  "wdn_pkx",
+  1
+);
 const StonePickaxe = new Pickaxe(
   "Stone Pickaxe",
   "stone_pickaxe",
   100,
   0,
   "stn_pkx",
-  1
+  3
 );
 
 const Tools = new Map();
 
+Tools.set(WoodenPickaxe.id, WoodenPickaxe);
 Tools.set(StonePickaxe.id, StonePickaxe);
 
 module.exports = Tools;
