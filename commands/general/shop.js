@@ -11,6 +11,7 @@ const Bags = require("../../constants/Classes/bags");
 // const Transports = require("../../constants/Classes/transports");
 const logger = require("../../logger");
 const { winter: quotes } = require("../../constants/quotes.json");
+const COLORS = require("../../constants/colors");
 
 const EMBED_TEXT = {
   menu: {
@@ -145,9 +146,9 @@ const embedFromCategory = (cat) => {
   const ans = new EmbedBuilder()
     .setTitle(EMBED_TEXT.category.title(cat))
     .setDescription(EMBED_TEXT[cat].description)
+    .setColor(COLORS.SECONDARY)
     .setFooter({ text: EMBED_TEXT.category.footer() });
   cat === "menu" ? "" : ans.setFields(...EMBED_TEXT[cat].fields);
-  logger.info(EMBED_TEXT[cat].fields);
   return ans;
 };
 

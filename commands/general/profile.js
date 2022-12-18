@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
 const Tools = require("../../constants/Classes/tools");
+const Bags = require("../../constants/Classes/bags");
 const Locations = require("../../constants/Classes/locations");
 
 const COLOR = "#03045E";
@@ -21,6 +22,7 @@ module.exports = {
    */
   async execute(interaction, user) {
     const userTool = Tools.get(user.inventory.tool.itemId);
+    const userBag = Bags.get(user.inventory.storage.itemId);
     const embed = new EmbedBuilder()
       .setColor(COLOR)
       .setAuthor({
@@ -45,7 +47,7 @@ module.exports = {
         },
         {
           name: "Storage",
-          value: `**Name:** ${user.inventory.storage.name}\n**Capacity:** ${user.inventory.storage.capacity}\n**Space left:** ${user.spaceLeft}`,
+          value: `**Name:** ${userBag.displayName}\n**Capacity:** ${userBag.capacity}\n**Space left:** ${user.spaceLeft}`,
           inline: true,
         },
         { name: "Transport", value: `Not unlocked yet`, inline: false },
