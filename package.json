@@ -1,11 +1,11 @@
 {
-  "name": "Factice",
+  "name": "factice",
   "version": "1.0.0",
   "description": "Manage your ice empire ❄ from the very beginning!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node index.js",
+    "dev": "nodemon src/index.js --ignore ./log.json | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss",
     "start": "node index.js"
   },
   "keywords": [
@@ -22,5 +22,10 @@
     "mongoose": "^6.8.0",
     "mustache": "^4.2.0",
     "node-fetch": "^3.2.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "pino": "^8.7.0",
+    "pino-pretty": "^9.1.1"
   }
 }

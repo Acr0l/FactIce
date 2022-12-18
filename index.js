@@ -1,6 +1,6 @@
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
-const TOKEN = process.env["TOKEN"];
-const { MONGODB_URI } = require("./config.json"),
+const logger = require("./logger");
+const { MONGODB_URI, TOKEN } = require("./config.json"),
   fs = require("fs"),
   mongoose = require("mongoose"),
   path = require("path");
@@ -85,7 +85,7 @@ process.on("unhandledRejection", (error) => {
 mongoose
   .set('strictQuery', false)
   .connect(MONGODB_URI)
-  .then(() => console.log("MongoDB Connected"))
+  .then(() => logger.info("MongoDB Connected"))
   .catch((err) => console.error(err));
 
 // Login to Discord (token)
