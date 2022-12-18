@@ -51,12 +51,8 @@ const userSchema = new mongoose.Schema({
       efficiency: { type: Number, required: true },
     },
     storage: {
-      name: {
-        type: String,
-        default: "leather_bag",
-        required: true,
-        enum: ["leather_bag"],
-      },
+      itemId: { type: String, required: true },
+      rank: { type: Number, required: true },
       capacity: {
         type: Number,
         default: 10,
@@ -114,7 +110,7 @@ userSchema
       },
       itemIndex = this.inventory?.storage?.stored.findIndex(findItem) ?? -1;
     if (itemIndex === -1 || itemStock?.amount < amount)
-      throw new Error("Tried to sell more than what was in storage!");
+      throw new Error("❌ Tried to sell more than what was in storage!");
     else if (itemStock.amount === amount)
       this.inventory?.storage?.stored.splice(itemIndex, 1);
     else if (itemStock.amount > amount)
