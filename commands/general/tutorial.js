@@ -2,7 +2,12 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const logger = require("../../logger");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const Profile = require("../../models/userModel");
-const { Tools } = require("../../constants/Classes/ItemClass");
+const Tools = require("../../constants/Classes/tools");
+const Bags = require("../../constants/Classes/bags");
+
+const initialBagId = "lthr_bag";
+const initialToolId = "stn_pkx";
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("tutorial")
@@ -23,10 +28,13 @@ module.exports = {
         const profile = await Profile.create({
           userId: interaction.user.id,
           inventory: {
-            tool: Tools.get("stn_pkx").equip,
+            tool: Tools.get(initialToolId).equip,
+            storage: Bags.get(initialBagId).equip,
           },
         });
+
         profile.save();
+
         await interaction.reply({
           content: `Welcome ${interaction.user.username}, you have successfully registered, click the button to begin the tutorial! (WIP)`,
           components: [row],
