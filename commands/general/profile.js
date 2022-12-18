@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
-const { Tools } = require("../../constants/Classes/ItemClass");
+const Tools = require("../../constants/Classes/tools");
 const Locations = require("../../constants/Classes/locations");
 
 const COLOR = "#03045E";
@@ -48,7 +48,7 @@ module.exports = {
           value: `**Name:** ${user.inventory.storage.name}\n**Capacity:** ${user.inventory.storage.capacity}\n**Space left:** ${user.spaceLeft}`,
           inline: true,
         },
-        { name: "Transport", value: `Not unlocked yet`, inline: true },
+        { name: "Transport", value: `Not unlocked yet`, inline: false },
         { name: "Balance", value: `**$${user.balance}**`, inline: true },
       ]);
 
