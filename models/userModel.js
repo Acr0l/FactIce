@@ -20,19 +20,32 @@ const itemSchema = new mongoose.Schema({
 });
 
 /**
+ * @description Saves this document by inserting a new document into the database if document.isNew is true, or sends an updateOne operation only with the modifications to the database, it does not replace the whole document in the latter case.
+ * @typedef { Function } DocSave
+ * @example
+ * product.sold = Date.now();
+ * product = await product.save();
+ * @example <caption>If save is successful, the returned promise will fulfill with the document saved.</caption>
+ * const newProduct = await product.save();
+ * newProduct === product; // true
+ * @returns { Promise|undefined|void } Returns undefined if used with callback or a Promise otherwise.
+ */
+
+/**
  * @typedef User
  * @property { import('mongoose').Types.ObjectId } id
  * @property { String } userId
  * @property { Number } balance
  * @property { Object } inventory
  * @property { { itemId: String, rank: Number, efficiency: Number } } inventory.tool
- * @property { { name: String, capacity: Number, storage: itemModel } } inventory.storage
+ * @property { { itemId: String, capacity: Number, rank: Number, stored: itemModel[] } } inventory.storage
  * @property { String } inventory.transport
  * @property { Map } cooldowns
  * @property { String } location
  * @property { String } status
  * @property { Number } spaceLeft - Getter that returns the space left in the storage
  * @property { itemModel } sell - Virtual that modifies user to subtract items from storage.
+ * @property { DocSave } save
  */
 const userSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },
