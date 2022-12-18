@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const Locations = require("../../constants/Classes/locations");
+const logger = require("../../logger");
 const DELAY = 5000;
 
 module.exports = {
@@ -30,19 +31,20 @@ module.exports = {
     await user.save();
     try {
       await interaction.reply(
-        `On your way to \`${Locations[target].displayName}\`\nIt will take \`${
-          DELAY / 1000
-        }\` seconds to get there!`
+        `On your way to \`${
+          Locations.get(target)?.displayName
+        }\`\nIt will take \`${DELAY / 1000}\` seconds to get there!`
       );
       setTimeout(() => {
         interaction.followUp(
-          `You are now in the \`${Locations[target].displayName}\``
+          `You are now in the \`${Locations.get(target)?.displayName}\``
         );
+        user.location = target;
+        user.status = "idle";
+        user.save();
       }, DELAY);
-    } finally {
-      user.location = target;
-      user.status = "idle";
-      user.save();
+    } catch (err) {
+      logger.error(err);
     }
   },
 };
