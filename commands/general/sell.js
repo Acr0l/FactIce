@@ -43,10 +43,10 @@ module.exports = {
     // #endregion
     user.status = "selling";
     await user.save();
+    await interaction.reply("Selling fresh ice...");
     try {
-      interaction.reply("Selling fresh ice...");
+      user.sell = { itemId: itemToSellId, amount: amountToSell };
       setTimeout(async () => {
-        user.sell = { itemId: itemToSellId, amount: amountToSell };
         // TODO: Add money
         const moneyReceived =
           (Materials.get(itemToSellId)?.itemPrice ?? 0) * amountToSell;
@@ -60,9 +60,10 @@ module.exports = {
         );
       }, DELAY);
     } catch (error) {
-      await user.save();
       interaction.followUp(error.message);
-      logger.error(error);
+    } finally {
+      user.status = "idle";
+      await user.save();
     }
   },
 };
