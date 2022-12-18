@@ -8,7 +8,7 @@ const {
 const Materials = require("../../constants/Classes/materials");
 const Tools = require("../../constants/Classes/tools");
 const Bags = require("../../constants/Classes/bags");
-const Transports = require("../../constants/Classes/transports");
+// const Transports = require("../../constants/Classes/transports");
 const logger = require("../../logger");
 const { winter: quotes } = require("../../constants/quotes.json");
 
@@ -32,15 +32,33 @@ const EMBED_TEXT = {
     description: "The more the merrier it is said.",
     fields: Array.from(Bags.values()).map((e) => e.display),
   },
-  transport: {
-    description: "The ice melts, but not if you are fast enough.",
-    fields: Array.from(Transports.values()).map((e) => e.display),
+  // TODO: transport: {
+  //   description: "The ice melts, but not if you are fast enough.",
+  //   fields: Array.from(Transports.values()).map((e) => e.display),
+  // },
+  materials: {
+    description: "Never cold enough.",
+    fields: Array.from(Materials.values()).map((e) => e.displayBuy),
   },
-  ice: {
-    description: "When you miss is, it comes.",
-    fields: Array.from(Materials.values()).map((e => e.displayBuy))
-  }
 };
+
+const SELECT_MENU_OPTIONS = [
+  {
+    label: "Tools",
+    description: "Look through our amazing pickaxes and more!",
+    value: "tools",
+  },
+  {
+    label: "Bags",
+    description: "Look through our amazing bags and more!",
+    value: "bags",
+  },
+  {
+    label: "Materials",
+    description: "If you ran out of ice, this is your place!",
+    value: "materials",
+  },
+];
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("shop")
@@ -52,7 +70,8 @@ module.exports = {
         .setRequired(false)
         .addChoices(
           { name: "Tools", value: "tools" },
-          { name: "Bags", value: "bags" }
+          { name: "Bags", value: "bags" },
+          { name: "Materials", value: "materials" }
         )
     ),
   /**
@@ -68,18 +87,9 @@ module.exports = {
     const categoryPicked = interaction.options.getString("category") ?? "menu";
     const selectMenu = new StringSelectMenuBuilder()
       .setCustomId("shop")
-      .setPlaceholder("Menu")
+      .setPlaceholder(capitalize(categoryPicked))
       .addOptions(
-        {
-          label: "Tools",
-          description: "Look through our amazing pickaxes and more!",
-          value: "tools",
-        },
-        {
-          label: "Bags",
-          description: "Look through our amazing bags and more!",
-          value: "bags",
-        }
+        ...SELECT_MENU_OPTIONS.filter((e) => e.value !== categoryPicked)
       );
 
     const row = new ActionRowBuilder().addComponents(selectMenu);
@@ -89,13 +99,6 @@ module.exports = {
       // @ts-ignore
       components: [row],
     });
-
-    /**
-     * @param {import('discord.js').UserSelectMenuInteraction} i
-     * @param {import('discord.js').UserSelectMenuInteraction} i
-     * @returns { Boolean } True or false
-     */
-    const filter = (i) => i.customId === "shop";
 
     const collector = interaction.channel?.createMessageComponentCollector({
       componentType: ComponentType.StringSelect,
@@ -115,19 +118,25 @@ module.exports = {
           });
           return;
         } else if (i.customId !== "shop") return;
-        const categoryEmbed = new EmbedBuilder()
-          .setTitle(EMBED_TEXT.category.title("Tools"))
-          .setFooter({ text: EMBED_TEXT.category.footer() });
-
+        const categoryEmbed = embedFromCategory(i.values[0]);
+        const cRow = new ActionRowBuilder().addComponents(
+          selectMenu
+            .setPlaceholder(capitalize(i.values[0]))
+            .setOptions(
+              ...SELECT_MENU_OPTIONS.filter((e) => e.value !== i.values[0])
+            )
+        );
         i.update({
           embeds: [categoryEmbed],
           // @ts-ignore
-          components: [row],
+          components: [cRow],
         });
       }
     );
     collector?.on("end", (collected) => {
-      logger.info("Ready");
+      interaction.editReply({
+        components: [],
+      });
     });
   },
 };
