@@ -1,5 +1,7 @@
 const logger = require("../../logger.js");
-const { BaseItem } = require("./ItemClass.js");
+const BaseItem = require("./ItemClass.js");
+
+const BUY_EXTRA = 70;
 
 class Material extends BaseItem {
   /**
@@ -33,6 +35,19 @@ class Material extends BaseItem {
   static types = ["common", "unique"];
   static locations = ["village", "small-mountains", "big-mountains"];
 
+  get buyPrice() {
+    return Math.ceil(this.price * (1 + BUY_EXTRA / 100));
+  }
+
+  get displayBuy() {
+    return {
+      name: this.displayName,
+      value: `**$${this.buyPrice}**\nA \`${
+        ["Medieval", "Modern", "Contemporary"][this.rank]
+      }\` artifact!`,
+    };
+  }
+
   get rarity() {
     return this.materialRarity;
   }
@@ -55,5 +70,8 @@ const commonIce = new Material("Common Ice", "common_ice", 5, 0, "cm_i", 1, [
     ["small-mountains", "big-mountains"],
     "unique"
   );
-const Materials = new Map([[commonIce.id, commonIce], [specialIce.id, specialIce]]);
+const Materials = new Map([
+  [commonIce.id, commonIce],
+  [specialIce.id, specialIce],
+]);
 module.exports = Materials;
