@@ -4,9 +4,10 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const Profile = require("../../models/userModel");
 const Tools = require("../../constants/Classes/tools");
 const Bags = require("../../constants/Classes/bags");
+const { successEmbed } = require("../../util/replyEmbeds");
 
 const initialBagId = "lthr_bag";
-const initialToolId = "stn_pkx";
+const initialToolId = "wdn_pkx";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,9 +37,19 @@ module.exports = {
         profile.save();
 
         await interaction.reply({
-          content: `Welcome ${interaction.user.username}, you have successfully registered, click the button to begin the tutorial! (WIP)`,
-          components: [row],
+          embeds: [
+            successEmbed({
+              description: `Welcome ${interaction.user.username}, you have successfully registered!`,
+            }),
+          ],
+          // components: [row],
         });
+        const nextSteps = successEmbed({
+          title: "Next Steps...",
+          description:
+            "You are now an ice cutter ❄, and you can find ice by `walk`ing to the `Small Mountains` 🏔 and `cut`ing the ice ⛸, from there, your journey to the Ice Revolution has just begun!\nCheck your stats 🧮 by using `/profile`.",
+        });
+        await interaction.followUp({ embeds: [nextSteps] });
         return;
       } else {
         await interaction.reply({
