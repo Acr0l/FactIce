@@ -54,3 +54,5 @@ class Certificate extends BaseClass {
     return true;
   }
 }
+
+module.exports = Certificate;

@@ -11,13 +11,13 @@ class Location extends BaseClass {
    * @param {String} displayName - The name for the user
    * @param {String} name - The name for system and back-end
    * @param {Number} rank - Value to define probabilities and more.
-   * @param {Number} lvlReq - The lvl of the user to travel to the location.
+   * @param {Number} certReq - The lvl of the user to travel to the location.
    */
-  constructor(displayName, name, rank, lvlReq = 0) {
+  constructor(displayName, name, rank, certReq = 0) {
     super(displayName, name);
     this.rank = rank;
     this.materials = [];
-    this.lvlReq = lvlReq;
+    this.certReq = certReq;
   }
   get lMaterials() {
     return this.materials;

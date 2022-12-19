@@ -7,8 +7,24 @@ const Tools = require("../../constants/Classes/tools"),
 const DELAY = 3000;
 const COLORS = require("../../constants/colors");
 const logger = require("../../logger");
+const {
+  midwayEmbed,
+  successEmbed,
+  failureEmbed,
+} = require("../../util/replyEmbeds");
 
 const Items = new Map([...Tools, ...Bags, ...Materials]);
+
+const EMBEDS = {
+  midwayEmbed: (itemDisplayName, amount) =>
+    `Please be patient while we transfer the ${itemDisplayName}${
+      amount === 1 ? "" : "s"
+    } to your account.`,
+  success: (item, amount) =>
+    `You have successfully acquired ${amount} ${item.displayName} for *$${
+      (item.buyPrice ?? item.price) * amount
+    }*`,
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -69,9 +85,12 @@ module.exports = {
     // #endregion
     try {
       const cost = (itemObject.buyPrice ?? itemObject.price) * itemAmount,
-        midTimeEmbed = processingEmbed(itemObject.displayName, itemAmount);
+        midwayEmbedBuilt = midwayEmbed({
+          delay: DELAY,
+          description: EMBEDS.midwayEmbed(itemObject.displayName, itemAmount),
+        });
       interaction.reply({
-        embeds: [midTimeEmbed],
+        embeds: [midwayEmbedBuilt],
       });
       setTimeout(() => {
         user.balance -= cost;
@@ -89,7 +108,11 @@ module.exports = {
           ];
         }
         interaction.followUp({
-          embeds: [successEmbed(itemObject, itemAmount)],
+          embeds: [
+            successEmbed({
+              description: EMBEDS.success(itemObject, itemAmount),
+            }),
+          ],
         });
         user.save();
       }, DELAY);
@@ -98,47 +121,3 @@ module.exports = {
     }
   },
 };
-
-/**
- * Easily create function to display any failure to users
- * @param { String } msg - The description of why the cmd failed
- * @returns { import('discord.js').EmbedBuilder }
- */
-const failureEmbed = (msg) =>
-  new EmbedBuilder()
-    .setTitle("Oops! It seems there was a problem here...")
-    .setDescription(msg)
-    .setColor(COLORS.FAILURE)
-    .setFooter({ text: "The command was not carried on" });
-/**
- * Easily create function to display any failure to users
- * @param { String } itemDisplayName - The nice-looking name of the item.
- * @param { Number } amount - The quantity purchased by the user.
- * @returns { import('discord.js').EmbedBuilder }
- */
-const processingEmbed = (itemDisplayName, amount) =>
-  new EmbedBuilder()
-    .setTitle("Condensing snowflakes...")
-    .setDescription(
-      `Please be patient while we transfer the ${itemDisplayName}${
-        amount === 1 ? "" : "s"
-      } to your account.`
-    )
-    .setColor(COLORS.QUATERNARY)
-    .setFooter({ text: `Please wait ${DELAY / 1000} seconds.` });
-/**
- *
- * @param { { displayName: String, buyPrice: ?Number, price: Number}} item
- * @param {*} amount
- * @returns
- */
-const successEmbed = (item, amount) =>
-  new EmbedBuilder()
-    .setTitle("Icy Success!")
-    .setDescription(
-      `You have successfully acquired ${amount} ${item.displayName} for *$${
-        (item.buyPrice ?? item.price) * amount
-      }*`
-    )
-    .setColor(COLORS.TERTIARY)
-    .setTimestamp();
