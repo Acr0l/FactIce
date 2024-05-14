@@ -19,7 +19,7 @@
     "@discordjs/builders": "^1.4.0",
     "@types/node": "^18.0.6",
     "discord.js": "^14.7.1",
-    "mongoose": "^6.8.0",
+    "mongoose": "^6.11.3",
     "mustache": "^4.2.0",
     "node-fetch": "^3.2.6",
     "pino": "^8.8.0",
